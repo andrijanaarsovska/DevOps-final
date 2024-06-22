@@ -26,7 +26,6 @@ jobs:
       - name: Build Backend Docker image
         run: |
           cd backend
-          mvn clean package
           docker buildx build --platform linux/amd64,linux/arm64 --push --tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-backend:latest .
 
       - name: Clean up
