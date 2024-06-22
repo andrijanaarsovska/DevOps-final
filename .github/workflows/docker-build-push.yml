@@ -1,3 +1,4 @@
+
 name: Build and Push Docker Images
 
 on:
@@ -24,7 +25,9 @@ jobs:
 
       - name: Build Backend Docker image
         run: |
-          docker buildx build --platform linux/amd64,linux/arm64 --push --tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-backend:latest -f backend/Dockerfile .
+          cd backend
+          mvn clean package
+          docker buildx build --platform linux/amd64,linux/arm64 --push --tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-backend:latest .
 
       - name: Clean up
         run: docker buildx prune -a -f
