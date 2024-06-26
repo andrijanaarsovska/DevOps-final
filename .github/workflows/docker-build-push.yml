@@ -1,31 +1,56 @@
-name: Build and Push Docker Image
+
+name: Build and Push Docker Images
 
 on:
   push:
     branches:
-      'main'
+      - main
 
 jobs:
-  build-and-push:
+  build-and-push-backend:
     runs-on: ubuntu-latest
 
     steps:
-      
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-      
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Build Docker image
-      run: |
-        docker buildx build \--platform linux/amd64,linux/arm64 \--push \--tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-backend:latest .
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Clean up
-      run: docker buildx prune -a -f
+      - name: Build Backend Docker image
+        run: |
+          cd backend
+          docker buildx build --platform linux/amd64,linux/arm64 --push --tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-backend:latest .
+
+      - name: Clean up
+        run: docker buildx prune -a -f
+
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Frontend Docker image
+        run: |
+          docker buildx build --platform linux/amd64,linux/arm64 --push --tag ${{ secrets.DOCKERHUB_USERNAME }}/devops-final-frontend:latest -f frontend/Dockerfile .
+
+      - name: Clean up
+        run: docker buildx prune -a -f
+
