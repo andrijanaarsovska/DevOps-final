@@ -1,0 +1,177 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: devops
+#  namespace: devops
+#spec:
+#  replicas: 3
+#  selector:
+#    matchLabels:
+#      app: devops
+#  template:
+#    metadata:
+#      labels:
+#        app: devops
+#    spec:
+#      containers:
+#      - name: devops-final-backend
+#        image: andrijanaarsovska/devops-final-backend:latest
+#        ports:
+#        - containerPort: 8080
+#        env:
+#        - name: DB_USERNAME
+#          valueFrom:
+#            secretKeyRef:
+#               name: db-secret
+#               key: username
+#        - name: DB_PASSWORD
+#          valueFrom:
+#            secretKeyRef:
+#               name: db-secret
+#               key: password
+#        volumeMounts:
+#          - name: config-volume
+#            mountPath: /config
+#            subPath: application.properties
+#      volumes:
+#      - name: config-volume
+#        configMap:
+#          name: app-config
+#          items:
+#           - key: application.properties
+#             path: application.properties
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: andrijanaarsovska/devops-final-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: andrijanaarsovska/devops-final-frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: frontend-config
+                  key: API_URL
+
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: postgres-deployment
+#  namespace: devops
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: postgres
+#  template:
+#    metadata:
+#      labels:
+#        app: postgres
+#    spec:
+#      containers:
+#        - name: postgres
+#          image: postgres:15
+#          ports:
+#            - containerPort: 5432
+#          env:apiVersion: apps/v1
+
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: postgres-deployment
+#  namespace: devops
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: postgres
+#  template:
+#    metadata:
+#      labels:
+#        app: postgres
+#    spec:
+#      containers:
+#        - name: postgres
+#          image: postgres:15
+#          ports:
+#            - containerPort: 5432
+##    env:
+##            #            - name: DB_USERNAME
+##            #              value: accommodationbase
+##            - name: DB_USERNAME
+##              valueFrom:
+##                secretKeyRef:
+##                  name: db-secret
+##                  key: username
+##            - name: DB_PASSWORD
+##              valueFrom:
+##                secretKeyRef:
+##                  name: db-secret
+##                  key: password
+#
+#          env:
+#            #            - name: DB_USERNAME
+#            #              value: accommodationbase
+#            - name: DB_USERNAME
+#              valueFrom:
+#                secretKeyRef:
+#                  name: db-secret
+#                  key: username
+#            - name: DB_PASSWORD
+#              valueFrom:
+#                secretKeyRef:
+#                  name: db-secret
+#                  key: password

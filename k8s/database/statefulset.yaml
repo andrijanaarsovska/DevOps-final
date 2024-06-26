@@ -1,0 +1,123 @@
+##apiVersion: apps/v1
+##kind: StatefulSet
+##metadata:
+##  name: postgres-statefulset
+##  namespace: devops
+##spec:
+##  serviceName: postgres-service
+##  replicas: 1
+##  selector:
+##    matchLabels:
+##      app: postgres
+##  template:
+##    metadata:
+##      labels:
+##        app: postgres
+##    spec:
+##      imagePullSecrets:
+##        - name: my-registry-secret
+##      containers:
+##        - name: postgres
+##          image: cG9zdGdyZXMxMjM=
+##          ports:
+##            - containerPort: 5432
+##          envFrom:
+##            - configMapRef:
+##                name: postgres-config
+##            - secretRef:
+##                name: postgres-secret
+##  volumeClaimTemplates:
+##    - metadata:
+##        name: database-storage
+##      spec:
+##        accessModes: [ "ReadWriteOnce" ]
+##        resources:
+##          requests:
+##            storage: 1Gi
+#
+#
+#apiVersion: apps/v1
+#kind: StatefulSet
+#metadata:
+#  name: postgres-statefulset
+#  namespace: devops
+#spec:
+#  serviceName: postgres-service
+#  replicas: 1
+#  selector:
+#      matchLabels:
+#        app: postgres
+#  template:
+#      metadata:
+#        labels:
+#          app: postgres
+#      spec:
+#        containers:
+#          - name: postgres
+#            image: postgres:15
+#            ports:
+#              - containerPort: 5432
+#            env:
+#              - name: DB_USERNAME
+#                valueFrom:
+#                  secretKeyRef:
+#                    name: postgres-secret
+#                    key: username
+#              - name: DB_PASSWORD
+#                valueFrom:
+#                  secretKeyRef:
+#                    name: postgres-secret
+#                    key: password
+#
+#  volumeClaimTemplates:
+#    - metadata:
+#        name: database-storage
+#      spec:
+#        accessModes: [ "ReadWriteOnce" ]
+#        resources:
+#          requests:
+#            storage: 1Gi
+
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+  namespace: devops
+spec:
+  serviceName: database-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "accommodationbase"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+  volumeClaimTemplates:
+    - metadata:
+        name: database-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
