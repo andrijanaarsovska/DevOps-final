@@ -9,4 +9,4 @@ data:
     spring.datasource.url=jdbc:postgresql://database-service:5432/accommodationbase
     spring.datasource.username=${DB_USERNAME}
     spring.datasource.password=${DB_PASSWORD}
-#    spring.datasource.url=jdbc:postgresql://devops-service:5432/accommodationbase
+
